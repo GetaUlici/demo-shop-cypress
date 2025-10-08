@@ -5,7 +5,7 @@ describe("Checkout Page tests suite", () => {
     cy.visit("/");
   });
 
-  xit("Purchasing a simple product from a guest user", () => {
+  it("Purchasing a simple product from a guest user", () => {
     cy.get('[data-icon="cart-plus"]').first().click();
     cy.get('[href="#/cart"]').click();
     cy.get(".btn-success").click();
@@ -17,17 +17,17 @@ describe("Checkout Page tests suite", () => {
     cy.get(".text-center").should("contain", "Thank you for your order!");
   });
 
-  xit("Adding a product to wishlist", () => {
+  it("Adding a product to wishlist", () => {
     cy.get('.card > .text-muted > [bottom="true"]').first().click();
     cy.get('[href="#/wishlist"]').click();
     cy.url().should(
       "include",
-      "https://fasttrackit-test.netlify.app/#/wishlist"
+      "https://fasttrackit-test.netlify.app/#/wishlist",
     );
     cy.get(".card").should("contain", "Awesome Granite Chips");
   });
 
-  xit("Removing a product from wishlist", () => {
+  it("Removing a product from wishlist", () => {
     cy.get('.card > .text-muted > [bottom="true"]').first().click();
     cy.get('[href="#/wishlist"]').click();
     cy.get(".card").should("contain", "Awesome Granite Chips");
@@ -35,14 +35,14 @@ describe("Checkout Page tests suite", () => {
     cy.get("div").should("not.contain", "Awesome Granite Chips");
   });
 
-  xit("Adding a product to the shopping cart", () => {
+  it("Adding a product to the shopping cart", () => {
     cy.get('[data-icon="cart-plus"]').first().click();
     cy.get('[href="#/cart"]').click();
     cy.get("h1").should("contain", "Your cart");
     cy.get(".container").should("contain", "Awesome Granite Chips");
   });
 
-  xit("Removing a product from the shopping cart", () => {
+  it("Removing a product from the shopping cart", () => {
     cy.get('[data-icon="cart-plus"]').first().click();
     cy.get('[href="#/cart"]').click();
     cy.get("h1").should("contain", "Your cart");
@@ -50,7 +50,7 @@ describe("Checkout Page tests suite", () => {
     cy.get('[data-icon="trash"]').click();
     cy.get('[class="text-center container"]').should(
       "contain",
-      "How about adding some products in your cart?"
+      "How about adding some products in your cart?",
     );
   });
 
@@ -66,7 +66,7 @@ describe("Checkout Page tests suite", () => {
         const expectedTotal = price * 2;
 
         cy.log(
-          `The price of the product after quantity increase should be: ${expectedTotal}`
+          `The price of the product after quantity increase should be: ${expectedTotal}`,
         );
         cy.get('[data-icon="plus-circle"]').click();
 
@@ -77,7 +77,7 @@ describe("Checkout Page tests suite", () => {
             expect(newPrice).to.eq(expectedTotal);
 
             cy.log(
-              `The price of the product matches the expected total: ${expectedTotal}`
+              `The price of the product matches the expected total: ${expectedTotal}`,
             );
           });
       });
@@ -105,5 +105,72 @@ describe("Checkout Page tests suite", () => {
       });
   });
 
-  
+  it("Cancel the order from the Checkout page", () => {
+    cy.get('[data-icon="cart-plus"]').first().click();
+    cy.get('[href="#/cart"]').click();
+    cy.get(".container").should("contain", "Awesome Granite Chips");
+    cy.get(".btn-success").click();
+    cy.get(".btn-danger").click();
+    cy.get("h1")
+      .should("have.text", "Your cart")
+      .then((el) => {
+        cy.log(`${el.text()} is displayed, the order has been canceled.`);
+      });
+    cy.get(".container").should("contain", "Awesome Granite Chips");
+  });
+
+  it("Clicking reset when a product is added to the shopping cart", () => {
+    cy.get('[data-icon="cart-plus"]').first().click();
+    cy.get('[href="#/cart"]').click();
+    cy.get(".container").should("contain", "Awesome Granite Chips");
+    cy.get('[title="Reset the application state"]').click();
+    cy.get(".container").should("not.contain", "Awesome Granite Chips");
+    cy.get('[class="text-center container"]').should(
+      "contain",
+      "How about adding some products in your cart?",
+    );
+  });
+
+  it("Clicking reset when a product is added to the wishlist", () => {
+    cy.get(".col .card ")
+      .first()
+      .should("contain", "Awesome Granite Chips")
+      .within(() => {
+        cy.get(".fa-heart").click();
+      });
+    cy.get('[href="#/wishlist"]').click();
+    cy.get(".container").should("contain", "Awesome Granite Chips");
+    cy.get('[title="Reset the application state"]').click();
+    cy.get(".container").should("not.contain", "Awesome Granite Chips");
+  });
+
+  it("Validation of 'First Name' field on Checkout page", () => {
+    cy.get('[data-icon="cart-plus"]').first().click();
+    cy.get('[href="#/cart"]').click();
+    cy.get(".btn-success").click();
+    cy.get('[data-test="lastName"]').type("Ulici");
+    cy.get('[data-test="address"]').type("Floresti");
+    cy.get(".btn-success").click();
+    cy.get('[data-test="error"]').should("contain", "First Name is required");
+  });
+
+  it("Validation of 'Last Name' field on Checkout page", () => {
+    cy.get('[data-icon="cart-plus"]').first().click();
+    cy.get('[href="#/cart"]').click();
+    cy.get(".btn-success").click();
+    cy.get('[data-test="firstName"]').type("Geta");
+    cy.get('[data-test="address"]').type("Floresti");
+    cy.get(".btn-success").click();
+    cy.get('[data-test="error"]').should("contain", "Last Name is required");
+  });
+
+  it("Validation of 'Address' field on Checkout page", () => {
+    cy.get('[data-icon="cart-plus"]').first().click();
+    cy.get('[href="#/cart"]').click();
+    cy.get(".btn-success").click();
+    cy.get('[data-test="firstName"]').type("Geta");
+    cy.get('[data-test="lastName"]').type("Ulici");
+    cy.get(".btn-success").click();
+    cy.get('[data-test="error"]').should("contain", "Address is required");
+  });
 });
