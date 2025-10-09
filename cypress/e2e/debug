@@ -1,0 +1,52 @@
+/// <reference types="cypress" />
+
+describe('Homepage tests suite', () => {
+  beforeEach('Visit homepage', () => {
+    cy.visit('/');
+  });
+
+  it('Clicking Homepage button from the shopping cart', () => {
+    // cypress/e2e/search_spec.cy.js
+
+describe('Search Functionality', () => {
+  it('should display only Awesome products when searching for "Awesome"', () => {
+    const expectedProducts = [
+      'Awesome Granite Chips',
+      'Awesome Metal Chair',
+      'Awesome Soft Shirt'
+    ];
+
+    cy.get('#input-search')
+      //.clear()
+      .type('Awesome');
+    
+    cy.get('[type="button"]').first()
+      .click();
+
+    cy.log("The search engine is looking up for the keyword 'Awesome'.");
+
+    cy.get('..row-cols-1') // replace with actual selector
+      .then(($elements) => {
+        const actualProductNames = [...$elements].map(el => el.innerText.trim());
+
+        // Verify all expected products are present
+        expectedProducts.forEach(expectedProduct => {
+          expect(actualProductNames, `Expected product ${expectedProduct} not found`)
+            .to.include(expectedProduct);
+        });
+
+        // Verify all found products contain "Awesome"
+        actualProductNames.forEach(actualProduct => {
+          expect(actualProduct, `Unexpected product found: ${actualProduct}`)
+            .to.include('Awesome');
+        });
+      });
+  });
+});
+
+  });
+
+  it.only("Test the search functionality by searching for the keyword 'Awesome'", () => {
+    
+  });
+});
