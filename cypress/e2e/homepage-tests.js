@@ -74,7 +74,7 @@ describe('Homepage tests suite', () => {
     });
   });
 
-  it.only('Sorts products by Name in  reverse alphabetical order (Z to A)', () => {
+  it('Sorts products by Name in  reverse alphabetical order (Z to A)', () => {
     const sortOptionText = 'Sort by name (Z to A)';
 
     cy.get('.sort-products-select').select(sortOptionText);
@@ -90,6 +90,44 @@ describe('Homepage tests suite', () => {
         'The products are not sorted in reverse alphabetical order (Z to A).'
       ).to.deep.equal(expectedProductNames);
       cy.log(`✅ The products are sorted in reverse alphabetical order (Z to A), as expected.`);
+    });
+  });
+
+  it('Sorting test by Ascending Price, from Low to High', () => {
+    const sortOptionText = 'Sort by price (low to high)';
+
+    cy.get('.sort-products-select').select(sortOptionText);
+
+    cy.get('span[style="font-weight: bold; font-size: 16px;"]').then(($priceElements) => {
+      const actualPrices = Cypress.$.makeArray($priceElements).map((el) => {
+        return parseFloat(el.innerText.replace('$', '').trim());
+      });
+      const expectedPrices = actualPrices.slice().sort((a, b) => a - b);
+
+      expect(actualPrices, 'The products are not sorted by ascending prices.').to.deep.equal(
+        expectedPrices
+      );
+
+      cy.log('The products are sorted by ascending prices, from Low to High');
+    });
+  });
+
+  it('Sorting test by Ascending Price, from High to Low', () => {
+    const sortOptionText = 'Sort by price (high to low)';
+
+    cy.get('.sort-products-select').select(sortOptionText);
+
+    cy.get('span[style="font-weight: bold; font-size: 16px;"]').then(($priceElements) => {
+      const actualPrices = Cypress.$.makeArray($priceElements).map((el) => {
+        return parseFloat(el.innerText.replace('$', '').trim());
+      });
+      const expectedPrices = actualPrices.slice().sort((a, b) => b - a);
+
+      expect(actualPrices, 'The products are not sorted by descending prices.').to.deep.equal(
+        expectedPrices
+      );
+
+      cy.log('The products are sorted by descending prices, from High to Low');
     });
   });
 });
